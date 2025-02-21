@@ -19,18 +19,18 @@ global SORTED_ASCII_TABLE: [str<1>; 127] = [
 ];
 
 // Functions 
-fn code_at<N>(s: str<N>, index: u64) -> u8 {
-    assert(index < N);
+fn code_at<let N: u32>(s: str<N>, index: u64) -> u8 {
+    assert(index < N as u64);
     s.as_bytes()[index]
 }
 
-fn char_at<N>(s: str<N>, index: u64) -> str<1> {
+fn char_at<let N: u32>(s: str<N>, index: u64) -> str<1> {
     let byte = code_at(s, index);
     let ascii_index = byte - ASCII_TABLE_START_INDEX;
     SORTED_ASCII_TABLE[ascii_index]
 }
 
-fn index_of<N, M>(s: str<N>, substr: str<M>) -> i64 {
+fn index_of<let N: u32, let M: u32>(s: str<N>, substr: str<M>) -> i64 {
     assert(M <= N, "Substring length must be less than or equal to string length");
     let substr_bytes = substr.as_bytes();
     let str_bytes = s.as_bytes();
@@ -44,8 +44,8 @@ fn index_of<N, M>(s: str<N>, substr: str<M>) -> i64 {
         if (index == -1) & (str_bytes[i] == substr_bytes[0]) {
             index = i as i64;
             match_count += 1;
-        } else if (index != -1) & (i - index < M) {
-            if (str_bytes[i] != substr_bytes[i - index]) {
+        } else if (index != -1) & (i as i64 - index < M as i64) {
+            if (str_bytes[i] != substr_bytes[i as i64 - index]) {
                 // If any of the subsequent characters don't match, reset the index
                 // as this means it's not the right substring
                 if (str_bytes[i] == substr_bytes[0]) {
@@ -76,7 +76,7 @@ fn index_of<N, M>(s: str<N>, substr: str<M>) -> i64 {
     index
 }
 
-fn last_index_of<N, M>(s: str<N>, substr: str<M>) -> i64 {
+fn last_index_of<let N: u32, let M: u32>(s: str<N>, substr: str<M>) -> i64 {
     assert(M <= N, "Substring length must be less than or equal to string length");
     let substr_bytes = substr.as_bytes();
     let str_bytes = s.as_bytes();
@@ -97,8 +97,8 @@ fn last_index_of<N, M>(s: str<N>, substr: str<M>) -> i64 {
         if (temp_index == -1) & (str_bytes[i] == substr_bytes[0]) {
             temp_index = i as i64;
             match_count += 1;
-        } else if (temp_index != -1) & (i - temp_index < M) {
-            if (str_bytes[i] != substr_bytes[i - temp_index]) {
+        } else if (temp_index != -1) & (i as i64 - temp_index < M as i64) {
+            if (str_bytes[i] != substr_bytes[i as i64 - temp_index]) {
                 // If any of the subsequent characters don't match, reset the index
                 // as this means it's not the right substring
                 if (str_bytes[i] == substr_bytes[0]) {
@@ -127,7 +127,7 @@ fn last_index_of<N, M>(s: str<N>, substr: str<M>) -> i64 {
 
 // We use Field instead of integers for the Vector here as integers 
 // don't seem to work well with Vectors at the moment
-fn indexes_of<N, M>(s: str<N>, substr: str<M>) -> Vec<Field> {
+fn indexes_of<let N: u32, let M: u32>(s: str<N>, substr: str<M>) -> Vec<Field> {
     assert(M <= N, "Substring length must be less than or equal to string length");
     let substr_bytes = substr.as_bytes();
     let str_bytes = s.as_bytes();
@@ -148,8 +148,8 @@ fn indexes_of<N, M>(s: str<N>, substr: str<M>) -> Vec<Field> {
         if (temp_index == -1) & (str_bytes[i] == substr_bytes[0]) {
             temp_index = i as i64;
             match_count += 1;
-        } else if (temp_index != -1) & (i - temp_index < M) {
-            if (str_bytes[i] != substr_bytes[i - temp_index]) {
+        } else if (temp_index != -1) & (i as i64 - temp_index < M as i64) {
+            if (str_bytes[i] != substr_bytes[i as i64 - temp_index]) {
                 // If any of the subsequent characters don't match, reset the index
                 // as this means it's not the right substring
                 if (str_bytes[i] == substr_bytes[0]) {
@@ -176,11 +176,11 @@ fn indexes_of<N, M>(s: str<N>, substr: str<M>) -> Vec<Field> {
     indexes
 }
 
-fn contains<N, M>(s: str<N>, substr: str<M>) -> bool {
+fn contains<let N: u32, let M: u32>(s: str<N>, substr: str<M>) -> bool {
     index_of(s, substr) != -1
 }
 
-fn occurrences_of<N, M>(s: str<N>, substr: str<M>) -> u64 {
+fn occurrences_of<let N: u32, let M: u32>(s: str<N>, substr: str<M>) -> u64 {
     assert(M <= N, "Substring length must be less than or equal to string length");
     let substr_bytes = substr.as_bytes();
     let str_bytes = s.as_bytes();
@@ -201,8 +201,8 @@ fn occurrences_of<N, M>(s: str<N>, substr: str<M>) -> u64 {
         if (temp_index == -1) & (str_bytes[i] == substr_bytes[0]) {
             temp_index = i as i64;
             match_count += 1;
-        } else if (temp_index != -1) & (i - temp_index < M) {
-            if (str_bytes[i] != substr_bytes[i - temp_index]) {
+        } else if (temp_index != -1) & (i as i64 - temp_index < M as i64) {
+            if (str_bytes[i] != substr_bytes[i as i64 - temp_index]) {
                 // If any of the subsequent characters don't match, reset the index
                 // as this means it's not the right substring
                 if (str_bytes[i] == substr_bytes[0]) {
@@ -229,13 +229,13 @@ fn occurrences_of<N, M>(s: str<N>, substr: str<M>) -> u64 {
     occurrences
 }
 
-fn digit_at<N>(s: str<N>, index: u64) -> u8 {
+fn digit_at<let N: u32>(s: str<N>, index: u64) -> u8 {
     let byte = s.as_bytes()[index];
     assert((byte >= ZERO_INDEX) & (byte <= NINE_INDEX), "Character is not a digit");
     byte - ZERO_INDEX
 }
 
-fn hex_digit_at<N>(s: str<N>, index: u64) -> u8 {
+fn hex_digit_at<let N: u32>(s: str<N>, index: u64) -> u8 {
     let byte = s.as_bytes()[index];
     if (byte >= ZERO_INDEX) & (byte <= NINE_INDEX) {
         byte - ZERO_INDEX
@@ -249,7 +249,7 @@ fn hex_digit_at<N>(s: str<N>, index: u64) -> u8 {
     }
 }
 
-fn to_uint_slice<N>(s: str<N>, start: u64, end: u64) -> u64 {
+fn to_uint_slice<let N: u32>(s: str<N>, start: u64, end: u64) -> u64 {
     let mut result = 0;
     for i in start..end {
         let digit = digit_at(s, i);
@@ -258,19 +258,19 @@ fn to_uint_slice<N>(s: str<N>, start: u64, end: u64) -> u64 {
     result
 }
 
-fn to_uint<N>(s: str<N>) -> u64 {
-    to_uint_slice(s, 0, N)
+fn to_uint<let N: u32>(s: str<N>) -> u64 {
+    to_uint_slice(s, 0, N as u64)
 }
 
-fn to_int<N>(s: str<N>) -> i64 {
+fn to_int<let N: u32>(s: str<N>) -> i64 {
     if char_at(s, 0) == "-" {
-        -1 * to_uint_slice(s, 1, N) as i64
+        -1 * to_uint_slice(s, 1, N as u64) as i64
     } else {
-        to_uint_slice(s, 0, N) as i64
+        to_uint_slice(s, 0, N as u64) as i64
     }
 }
 
-fn from_hex_to_uint_slice<N>(s: str<N>, start: u64, end: u64) -> u64 {
+fn from_hex_to_uint_slice<let N: u32>(s: str<N>, start: u64, end: u64) -> u64 {
     let mut result = 0;
     for i in start..end {
         let digit = hex_digit_at(s, i);
@@ -279,34 +279,34 @@ fn from_hex_to_uint_slice<N>(s: str<N>, start: u64, end: u64) -> u64 {
     result
 }
 
-fn from_hex_to_uint<N>(s: str<N>, with_prefix: bool) -> u64 {
+fn from_hex_to_uint<let N: u32>(s: str<N>, with_prefix: bool) -> u64 {
     if with_prefix {
-        from_hex_to_uint_slice(s, 2, N)
+        from_hex_to_uint_slice(s, 2, N as u64)
     } else {
-        from_hex_to_uint_slice(s, 0, N)
+        from_hex_to_uint_slice(s, 0, N as u64)
     }
 }
 
-fn to_array_of_chars<N>(s: str<N>) -> [str<1>; N] {
+fn to_array_of_chars<let N: u32>(s: str<N>) -> [str<1>; N] {
     let mut result: [str<1>; N] = [" "; N];
     for i in 0..N {
-        result[i] = char_at(s, i);
+        result[i] = char_at(s, i as u64);
     }
     result
 }
 
 // Struct
 
-struct String<N> {
+struct String<let N: u32> {
     value: str<N>,
     len: u64,
 }
 
 // Implementation over String struct
 
-impl<N> String<N> {
+impl<let N: u32> String<N> {
     fn new(value: str<N>) -> Self {
-        Self { value, len: N }
+        Self { value, len: N as u64 }
     }
 
     fn code_at(self: Self, index: u64) -> u8 {
@@ -317,23 +317,23 @@ impl<N> String<N> {
         char_at(self.value, index)
     }
 
-    fn index_of<M>(self: Self, substr: str<M>) -> i64 {
+    fn index_of<let M: u32>(self: Self, substr: str<M>) -> i64 {
         index_of(self.value, substr)
     }
 
-    fn last_index_of<M>(self: Self, substr: str<M>) -> i64 {
+    fn last_index_of<let M: u32>(self: Self, substr: str<M>) -> i64 {
         last_index_of(self.value, substr)
     }
 
-    fn indexes_of<M>(self: Self, substr: str<M>) -> Vec<Field> {
+    fn indexes_of<let M: u32>(self: Self, substr: str<M>) -> Vec<Field> {
         indexes_of(self.value, substr)
     }
 
-    fn contains<M>(self: Self, substr: str<M>) -> bool {
+    fn contains<let M: u32>(self: Self, substr: str<M>) -> bool {
         contains(self.value, substr)
     }
 
-    fn occurrences_of<M>(self: Self, substr: str<M>) -> u64 {
+    fn occurrences_of<let M: u32>(self: Self, substr: str<M>) -> u64 {
         occurrences_of(self.value, substr)
     }
 
@@ -374,11 +374,11 @@ impl<N> String<N> {
 trait StringTrait {
     fn code_at(self, index: u64) -> u8;
     fn char_at(self, index: u64) -> str<1>;
-    fn index_of<M>(self, substr: str<M>) -> i64;
-    fn last_index_of<M>(self, c: str<M>) -> i64;
-    fn indexes_of<M>(self, c: str<M>) -> Vec<Field>;
-    fn contains<M>(self, substr: str<M>) -> bool;
-    fn occurrences_of<M>(self, c: str<M>) -> u64;
+    fn index_of<let M: u32>(self, substr: str<M>) -> i64;
+    fn last_index_of<let M: u32>(self, c: str<M>) -> i64;
+    fn indexes_of<let M: u32>(self, c: str<M>) -> Vec<Field>;
+    fn contains<let M: u32>(self, substr: str<M>) -> bool;
+    fn occurrences_of<let M: u32>(self, c: str<M>) -> u64;
     fn digit_at(self, index: u64) -> u8;
     fn hex_digit_at(self, index: u64) -> u8;
     fn to_uint_slice(self, start: u64, end: u64) -> u64;
@@ -389,7 +389,7 @@ trait StringTrait {
 }
 
 // Implementation for str type
-impl<N> StringTrait for str<N> {
+impl<let N: u32> StringTrait for str<N> {
     fn code_at(self: Self, index: u64) -> u8 {
         code_at(self, index)
     }
@@ -398,23 +398,23 @@ impl<N> StringTrait for str<N> {
         char_at(self, index)
     }
 
-    fn index_of<M>(self: Self, substr: str<M>) -> i64 {
+    fn index_of<let M: u32>(self: Self, substr: str<M>) -> i64 {
         index_of(self, substr)
     }
 
-    fn last_index_of<M>(self: Self, substr: str<M>) -> i64 {
+    fn last_index_of<let M: u32>(self: Self, substr: str<M>) -> i64 {
         last_index_of(self, substr)
     }
 
-    fn indexes_of<M>(self: Self, substr: str<M>) -> Vec<Field> {
+    fn indexes_of<let M: u32>(self: Self, substr: str<M>) -> Vec<Field> {
         indexes_of(self, substr)
     }
 
-    fn contains<M>(self: Self, substr: str<M>) -> bool {
+    fn contains<let M: u32>(self: Self, substr: str<M>) -> bool {
         contains(self, substr)
     }
 
-    fn occurrences_of<M>(self: Self, substr: str<M>) -> u64 {
+    fn occurrences_of<let M: u32>(self: Self, substr: str<M>) -> u64 {
         occurrences_of(self, substr)
     }
 
@@ -431,7 +431,7 @@ impl<N> StringTrait for str<N> {
     }
 
     fn to_uint(self: Self) -> u64 {
-        to_uint_slice(self, 0, N)
+        to_uint_slice(self, 0, N as u64)
     }
 
     fn to_int(self: Self) -> i64 {
